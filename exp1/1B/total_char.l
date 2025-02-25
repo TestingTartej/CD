@@ -2,7 +2,7 @@
 %{
     int charCount = 0;
 %}
-
+%option noyywrap
 %%
 . { charCount++; }
 \n { charCount++; }
