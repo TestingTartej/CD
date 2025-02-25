@@ -2,7 +2,7 @@
 %{
     int wordCount = 0;
 %}
-
+%option noyywrap
 %%
 [a-zA-Z0-9]+ { wordCount++; }
 %%

@@ -4,7 +4,7 @@
     int spaceCount = 0;
     int tabCount = 0;
 %}
-
+%option noyywrap
 %%
 \n      { lineCount++; }
 " "     { spaceCount++; }
