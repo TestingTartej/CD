@@ -4,7 +4,7 @@
     int count = 0;
     char word[100];
 %}
-
+%option noyywrap
 %%
 [a-zA-Z0-9]+ {
     if(strcmp(yytext, word) == 0)
