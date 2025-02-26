@@ -1,7 +1,7 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
-#include "calc.tab.h"
+#include "calc.tab.c"
 extern YYSTYPE yylval;
 void yyerror(char*);
 %}
