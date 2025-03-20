@@ -1,90 +1,88 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <string.h>
 
-int z = 0, i = 0, j = 0, c = 0;
-
-char a[16], ac[20], stk[15], act[10]; 
-
-void check()
+struct ProductionRule
 {
-    strcpy(ac,"REDUCE TO E -> ");  
-    
-    for(z = 0; z < c; z++) 
-    {
-        if(stk[z] == '4') 
-        {
-            printf("%s4", ac);
-            stk[z] = 'E';
-            stk[z + 1] = '\0';
-            printf("\n$%s\t%s$\t", stk, a); 
-        }
-    }
-        
-    for(z = 0; z < c - 2; z++)
-    {
-        if(stk[z] == '2' && stk[z + 1] == 'E' && 
-                                stk[z + 2] == '2') 
-        {
-            printf("%s2E2", ac);
-            stk[z] = 'E';
-            stk[z + 1] = '\0';
-            stk[z + 2] = '\0';
-            printf("\n$%s\t%s$\t", stk, a);
-            i = i - 2;
-        }
-    }
-        
-    for(z=0; z<c-2; z++)
-    {
-        if(stk[z] == '3' && stk[z + 1] == 'E' && 
-                                stk[z + 2] == '3') 
-        {
-            printf("%s3E3", ac);
-            stk[z] = 'E';
-            stk[z + 1] = '\0';
-            stk[z + 1] = '\0';
-            printf("\n$%s\t%s$\t", stk, a);
-            i = i - 2;
-        }
-    }
-    return ;
-}
+    char left[10];
+    char right[10];
+};
 
 int main()
 {
-    printf("GRAMMAR is -\nE->2E2 \nE->3E3 \nE->4\n");    
-    
-    printf("Enter a string to parse (max length 15 characters): ");
-    fgets(a, sizeof(a), stdin);
-    a[strcspn(a, "\n")] = 0;  // Remove the newline character that fgets might add
-    
-    c = strlen(a); 
-    
-    strcpy(act,"SHIFT"); 
-    
-    printf("\nstack \t input \t action"); 
-    
-    printf("\n$\t%s$\t", a); 
-    
-    for(i = 0; j < c; i++, j++) 
+    char input[20], stack[50], temp[50], ch[2], *token1, *token2, *substring;
+    int i, j, stack_length, substring_length, stack_top, rule_count = 0;
+    struct ProductionRule rules[10];
+
+    stack[0] = '\0';
+
+    printf("\nEnter the number of production rules: ");
+    scanf("%d", &rule_count);
+
+    printf("\nEnter the production rules (in the form 'left->right'): \n");
+    for (i = 0; i < rule_count; i++)
     {
-        printf("%s", act); 
-        
-        stk[i] = a[j];     
-        stk[i + 1] = '\0';
-        
-        a[j] = ' ';
-        
-        printf("\n$%s\t%s$\t", stk, a); 
-        
-        check(); 
+        scanf("%s", temp);
+        token1 = strtok(temp, "->");
+        token2 = strtok(NULL, "->");
+        strcpy(rules[i].left, token1);
+        strcpy(rules[i].right, token2);
     }
-    
-    check(); 
-    
-    if(stk[0] == 'E' && stk[1] == '\0') 
-        printf("Accept\n");
-    else 
-        printf("Reject\n");
+
+    printf("\nEnter the input string: ");
+    scanf("%s", input);
+
+    i = 0;
+    while (1)
+    {
+        if (i < strlen(input))
+        {
+            ch[0] = input[i];
+            ch[1] = '\0';
+            i++;
+            strcat(stack, ch);
+            printf("%s\t", stack);
+            for (int k = i; k < strlen(input); k++)
+            {
+                printf("%c", input[k]);
+            }
+            printf("\tShift %s\n", ch);
+        }
+
+        for (j = 0; j < rule_count; j++)
+        {
+
+            substring = strstr(stack, rules[j].right);
+            if (substring != NULL)
+            {
+
+                stack_length = strlen(stack);
+                substring_length = strlen(substring);
+                stack_top = stack_length - substring_length;
+                stack[stack_top] = '\0';
+                strcat(stack, rules[j].left);
+                printf("%s\t", stack);
+                for (int k = i; k < strlen(input); k++)
+                {
+                    printf("%c", input[k]);
+                }
+                printf("\tReduce %s->%s\n", rules[j].left, rules[j].right);
+                j = -1;
+            }
+        }
+
+
+        if (strcmp(stack, rules[0].left) == 0 && i == strlen(input))
+        {
+            printf("\nAccepted");
+            break;
+        }
+
+        if (i == strlen(input))
+        {
+            printf("\nNot Accepted");
+            break;
+        }
+    }
+
+    return 0;
 }
